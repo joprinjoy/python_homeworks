@@ -138,7 +138,8 @@ def guess(game_word):
             if game_word == show_word:
                 return True   
     #seting the failure of game with the number of entries in input word     
-    if len(input_word) != char_count: 
+    if len(input_word) != char_count:
+        print_hangman(man_hanged)
         return False       
 
 #to show the progress in the terminal after every guess
