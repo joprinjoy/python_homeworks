@@ -5,15 +5,80 @@ from time import sleep
 show_word_dict = {} 
 list_word =[] #word converted to list
 #image construct for different stages of hanging
-man_hanged = "+-----+\n |    |\n O    |\n/|\\   |\n/ \\   |\n      |\n   =====\n ========"
-man_hang_half = "+-----+\n |    |\n O    |\n/|\\   |\n      |\n      |\n   =====\n ========"
-man_hang_start = "+-----+\n |    |\n O    |\n      |\n      |\n      |\n   =====\n ========"
+hangman = [
+"""   +--------+
+    |       |
+    o       |
+   /|\\      |
+   / \\      |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+            |
+            |
+            |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+            |
+            |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+    o       |
+            |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+    o       |
+    |       |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+    o       |
+   /|       |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+    o       |
+   /|\\      |
+            |
+            |
+      ==========
+    ==============""",
+"""    +-------+
+    |       |
+    o       |
+   /|\\      |
+   /        |
+            |
+      ==========
+    ==============""",
+    
+]
+
 
 """function calls function to set the game word and function for main game.
 its asks gamer to choose to start o quit the game. once game word is recieved, game starts"""
 def start():
     print("Welcome To Hangman\n")
-    print(man_hanged)
+    show_hangman(0)
     print("\n Enter START to start or QUIT to quit the game:")
     ignition = input(">")
     ignition = ignition.lower()
@@ -100,16 +165,16 @@ def guess(game_word):
     masked_word = show_the_progress(game_word,1)
     print("\n" ,masked_word,"\n")
     sleep(1)
-    print_hangman(man_hang_start) 
+    show_hangman(7)
     char_count = len(game_word) 
     #setting up the number of chances user got to solve the word   
-    chance = 10
+    chance = 7
     #empty string to save the inputs from user to use later
     input_word = ""
     print(" if you wish to change the word , Enter NEXT  or start game by inputing first character")
-    for j in range (0,chance):
-        chances_remaining = chance - j
-        print(f"chances Remaining: {chances_remaining}")
+    while chance > 0:
+        
+        print(f"chances Remaining: {chance}")
         
         player_input = (input(">"))
         player_input = player_input.lower()
@@ -124,14 +189,15 @@ def guess(game_word):
 
                 #if guess was correct the character will appear in the right position
                 show_word = show_the_progress(game_word,player_input)
-                print_hangman(man_hang_start)
+                show_hangman(chance) 
                 print(show_word)
                 print("Hurray thats correct!!")
                 
             else:
+                chance-=1
                 show_word = show_the_progress(game_word,player_input)
                 #setting the right picture
-                show_hangman(j,char_count) 
+                show_hangman(chance) 
                 print(show_word) 
                 print("Oh noo..try again")
             #always checking whether the game word and show word is same or not   
@@ -139,7 +205,7 @@ def guess(game_word):
                 return True   
     #seting the failure of game with the number of entries in input word     
     if len(input_word) != char_count:
-        print_hangman(man_hanged)
+        show_hangman(0)
         return False       
 
 #to show the progress in the terminal after every guess
@@ -154,13 +220,24 @@ def show_the_progress(game_word,player_input):
     return (show_word_to_send)
 
 #render the image of hangman as per the result of enties
-def show_hangman(iteration,char_count):
-    if iteration >(char_count/2) and iteration < char_count :
-        print_hangman(man_hang_half)
-    elif iteration > char_count-1:
-        print_hangman(man_hanged)
-    else:
-        print_hangman(man_hang_start)
+def show_hangman(chance):
+    if chance == 0:
+        print_hangman(hangman[0])
+    elif chance == 7:
+        print_hangman(hangman[1])
+    elif chance == 6:
+        print_hangman(hangman[2])
+    elif chance == 5:
+        print_hangman(hangman[3])
+    elif chance == 4:
+        print_hangman(hangman[4])
+    elif chance == 3:
+        print_hangman(hangman[5])
+    elif chance == 2:
+        print_hangman(hangman[6])
+    elif chance == 1:
+        print_hangman(hangman[7])
+
 #retry fuction let the gamer start again    
 def retry():
 
