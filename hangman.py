@@ -87,16 +87,20 @@ def start():
         print("lets start")
         #game room is callled
         game_room()
+        return True
     else:
-        quit()
-
+        # quit()
+        return False
    
 def print_hangman(man):
     print(man)  
 
 #body of the game. here we call the guess and game ends here
 def game_room():
-    game_word = select_word()
+    #function to read file and filter the words to char>3
+    filtered_words = filtered_words_from_file()
+    #select the word for game
+    game_word = select_word(filtered_words)
     #testing purpose
     # print(f"word:{game_word}") 
 
@@ -112,17 +116,20 @@ def game_room():
     sleep(1)
     #calling guess function which perform as game engine . guess will return the result of the game
     result =guess(game_word)
+    
+    print(game_word)
     if result == True:
-        print('Congratulations ! You saved a life') 
-        # giving an option to gamer ,if want to retry 
-        retry()
+            print('Congratulations ! You saved a life') 
+            # giving an option to gamer ,if want to retry 
+            retry()
+    elif result == False:
+            print("\nCorrect word \t",game_word)
+            print("You killed Him")
+            retry()
     else:
-        print("You killed Him")
-        print("\nCorrect word \t",game_word)
-        retry()
+        game_room()
 
-#select word is function select and return  the word to game_word
-def select_word():
+def filtered_words_from_file():
     #words.txt is a file located in /usr/share/dict/words
     file = open('words.txt')
     file =file.read()
@@ -133,12 +140,16 @@ def select_word():
         if len(word) > 3:
             filtered_words.append(word)
 
+#select word is function select and return  the word to game_word
+def select_word(filtered_words):
+    filtered_words = ['hii','hey','hello','super','honeybee','brocode']
     #using random.choise() to pick random words from list
     word_from_file = random.choice(filtered_words)
 
     #setting rule to allow only words with number of characters more than 3
     if len(word_from_file) < 3 :
-        select_word()
+        select_word(filtered_words)
+        
     else:
         #removing 's from words as many words in the file having it
         if '\'' in word_from_file:
@@ -148,16 +159,19 @@ def select_word():
         word_from_file = word_from_file.lower()
 
         #masking the word
-        word_mask(word_from_file)
+        show_word_dict = word_mask(word_from_file)
         return(word_from_file)
     
+
 #masking the word nand hinting the numbe rof characters to gamer
 #dictionary usage can be eliminated
 def word_mask(word_from_file):
     p=1
+    # breakpoint()
     for i in word_from_file:
         show_word_dict.update({p:"-"})
         p+=1
+    return show_word_dict
 
 ##engine of the game takes input from gamer and check whether it is correct or not and return result
 def guess(game_word):
@@ -176,9 +190,10 @@ def guess(game_word):
         
         print(f"chances Remaining: {chance}")
         
-        player_input = (input(">"))
+        player_input = input(">")
         player_input = player_input.lower()
         #if input have a value inside 
+        
         if player_input:
             if player_input == 'next':
                 retry()
@@ -189,27 +204,34 @@ def guess(game_word):
 
                 #if guess was correct the character will appear in the right position
                 show_word = show_the_progress(game_word,player_input)
-                show_hangman(chance) 
+                if chance >0 and chance <=7:
+                    show_hangman(chance) 
                 print(show_word)
                 print("Hurray thats correct!!")
                 
             else:
+                
                 chance-=1
                 show_word = show_the_progress(game_word,player_input)
                 #setting the right picture
-                show_hangman(chance) 
+                if chance >0 and chance <=7:
+                    show_hangman(chance) 
                 print(show_word) 
                 print("Oh noo..try again")
+            
             #always checking whether the game word and show word is same or not   
             if game_word == show_word:
+                
                 return True   
-    #seting the failure of game with the number of entries in input word     
+    #setting the failure of game with the number of entries in input word     
+   
     if len(input_word) != char_count:
         show_hangman(0)
         return False       
 
 #to show the progress in the terminal after every guess
 def show_the_progress(game_word,player_input):
+    
     list_word = list(game_word)
     list_word_len = len(list_word)  
     for position in range(1,list_word_len+1):
@@ -217,6 +239,7 @@ def show_the_progress(game_word,player_input):
             show_word_dict.update({position:player_input})
     show_word_list =list(show_word_dict.values())
     show_word_to_send = ''.join(show_word_list)
+    # breakpoint()
     return (show_word_to_send)
 
 #render the image of hangman as per the result of enties
@@ -238,18 +261,25 @@ def show_hangman(chance):
     elif chance == 1:
         print_hangman(hangman[7])
 
+        
+
 #retry fuction let the gamer start again    
 def retry():
 
     print("Do you want to try again? Y/N")
     user_input =input('>')
-    user_input = user_input.lower()
-    if 'y' in user_input:
-        game_room()
-    elif 'n' in user_input:
-        quit()
+    if user_input:
+        user_input = user_input.lower()
+        if 'y' in user_input:
+            game_room()
+        elif 'n' in user_input:
+            quit()
+        else:
+            retry()
     else:
         retry()
 
+
 if __name__=="__main__":
     start()
+
